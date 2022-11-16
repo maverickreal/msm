@@ -16,9 +16,9 @@ const init = () => {
   });
 }
 
-const verifyUser = id => {
+const userExists = (email, password) => {
   let error, returnValue;
-  db.query(`SELECT COUNT(*) FROM USERS WHERE 'USERID'='${id}';`, (err, res) => {
+  db.query(`SELECT COUNT(ID) FROM USERS WHERE 'EMAIL'='${email}' || 'PASSWORD'='${password}';`, (err, res) => {
     if (err) {
       error = err;
     }
@@ -29,12 +29,12 @@ const verifyUser = id => {
       returnValue = res.rows[0];
     }
   });
-  return { error, returnValue };
+  return { error, user: returnValue };
 }
 
-const createUser = (name, email, password) => {
-  let error, user;
-  db.query(`INSERT INTO USERS('NAME', 'EMAIL', 'PASSWORD') VALUES('${name}', '${email}', '${password}');`, (err, res) => {
+const createUser = (id, name, email, password) => {
+  let error, returnValue;
+  db.query(`INSERT INTO USERS('ID', 'NAME', 'EMAIL', 'PASSWORD') VALUES('${id}', '${name}', '${email}', '${password}');`, (err, res) => {
     if (err) {
       error = err;
     }
@@ -42,15 +42,15 @@ const createUser = (name, email, password) => {
       err = 'user could not be created';
     }
     else {
-      user = res.rows[0];
+      returnValue = res.rows[0];
     }
   });
-  return { error, user };
+  return { error, user: returnValue };
 }
 
 const followUser = (followerId, followeeId) => {
   let error;
-  db.query(`SELECT COUNT(*) FROM USERS WHERE ANY('FOLLOWS')='${followeeId}';`, err => error = err);
+  db.query(`SELECT COUNT(ID) FROM USERS WHERE ANY('FOLLOWS')='${followeeId}';`, err => error = err);
   if (!error) {
     db.query(`UPDATE TABLE USERS SET 'FOLLOWS'[CARDINALITY('FOLLOWS')]='${followeeId}' WHERE 'ID'='${followerId}' LIMIT 1;`, err => error = err);
   }
@@ -64,7 +64,7 @@ const unFollowUser = (followerId, followeeId) => {
 }
 
 const getUserProfile = (userId) => {
-  let error, profile;
+  let error, returnValue;
   db.query(`SELECT 'NAME', 'EMAIL', CARDINALITY('FOLLOWS') FOLLOWCOUNT, CARDINALITY('POSTS') POSTCOUNT FROM USERS WHERE 'ID'='${userId}' LIMIT 1;`, (err, res) => {
     if (err) {
       error = err;
@@ -73,15 +73,15 @@ const getUserProfile = (userId) => {
       error = 'user not found to exist';
     }
     else {
-      profile = res.rows[0];
+      returnValue = { ...res.rows[0], id: userId };
     }
   });
-  return { error, profile };
+  return { error, profile: returnValue };
 }
 
-const createPost = (title, desc, userId) => {
-  let error, post;
-  db.query(`INSERT INTO POSTS('TITLE', 'DESCRIPTION', 'USERID', 'CREATEDTIME') VALUES('${title}', '${desc}', '${userId}', CURENT_TIMESTAMP());`, (err, res) => {
+const createPost = (id, title, desc, userId) => {
+  let error, returnValue;
+  db.query(`INSERT INTO POSTS('ID', 'TITLE', 'DESCRIPTION', 'USERID', 'CREATEDTIME') VALUES('${id}', '${title}', '${desc}', '${userId}', CURENT_TIMESTAMP());`, (err, res) => {
     if (err) {
       error = err;
     }
@@ -89,10 +89,10 @@ const createPost = (title, desc, userId) => {
       err = 'post could not be created';
     }
     else {
-      post = res.rows[0];
+      returnValue = res.rows[0];
     }
   });
-  return { error, post };
+  return { error, post: returnValue };
 }
 
 const deletePost = (userId, postId) => {
@@ -121,9 +121,9 @@ const unLikePost = (userId, postId) => {
   return error;
 }
 
-const createComment = (userId, postId, comment) => {
+const createComment = (id, userId, postId, comment) => {
   let error, returnValue;
-  db.query(`INSERT INTO COMMENTS('COMMENT', 'USERID', 'POSTID') VALUES('${comment}', '${userId}', '${postId}');`, (err, res) => {
+  db.query(`INSERT INTO COMMENTS('ID', 'COMMENT', 'USERID', 'POSTID') VALUES('${id}', '${comment}', '${userId}', '${postId}');`, (err, res) => {
     if (err) {
       error = err;
     }
@@ -137,12 +137,12 @@ const createComment = (userId, postId, comment) => {
   if (!error) {
     db.query(`UPDATE TABLE POSTS SET 'COMMENTS'=ARRAY_APPEND('COMMENTS', '${returnValue.ID}') WHERE 'ID'='${postId}';`, err => error = err);
   }
-  return { error, returnValue };
+  return { error, commentId: returnValue };
 }
 
 const getPost = postId => {
-  let error, post;
-  db.query(`SELECT * FROM POSTS WHERE 'ID'='${postId}' LIMIT 1;`, (err, res) => {
+  let error, returnValue;
+  db.query(`SELECT TITLE, DESCRIPTION FROM POSTS WHERE 'ID'='${postId}' LIMIT 1;`, (err, res) => {
     if (err) {
       error = err;
     }
@@ -150,14 +150,14 @@ const getPost = postId => {
       error = 'post not found';
     }
     else {
-      post = res.rows[0];
+      returnValue = { id: postId, ...res.rows[0] };
     }
   });
-  return { error, post };
+  return { error, post: returnValue };
 }
 
 const getPostsOfUser = userId => {
-  let error, posts;
+  let error, returnValue;
   db.query(`SELECT * FROM POSTS WHERE 'ID' IN (
     SELECT POSTS FROM USERS WHERE 'ID'='${userId}' LIMIT 1;
     );`, (err, res) => {
@@ -168,12 +168,12 @@ const getPostsOfUser = userId => {
       error = 'posts not found';
     }
     else {
-      posts = res.rows;
+      returnValue = res.rows;
     }
   });
-  return { error, posts };
+  return { error, posts: returnValue };
 }
 
 module.exports = {
-  init, verifyUser, createUser, followUser, unFollowUser, getUserProfile, createPost, deletePost, likePost, unLikePost, createComment, getPost, getPostsOfUser
+  init, userExists, createUser, followUser, unFollowUser, getUserProfile, createPost, deletePost, likePost, unLikePost, createComment, getPost, getPostsOfUser
 }
