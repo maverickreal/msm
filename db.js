@@ -2,7 +2,9 @@ const db = new (require('pg').Client)({
   user: process.env.DBUSER,
   host: process.env.DBHOST,
   database: process.env.DBDB,
-  password: process.env.DBPASSWORD
+  password: process.env.DBPASSWORD,
+  port: process.env.DBPORT,
+  ssl: true
 });
 
 const init = () => {

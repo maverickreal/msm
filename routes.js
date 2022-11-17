@@ -96,6 +96,9 @@ const getUser = async (req, res) => {
 
 const putPost = async (req, res) => {
     try {
+        if (!req.body.title || !req.body.description) {
+            res.status(400).send({ status: 'error', message: 'post information not provided' });
+        }
         let { post, error } = await db.createPost(uuid(), req.user.id, req.body.title, req.body.description);
         if (error) {
             console.error(error);
