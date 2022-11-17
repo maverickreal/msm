@@ -1,7 +1,6 @@
 const express = require('express'), db = require('./db.js'), { auth } = require('./auth.js'), router = require('./routes.js'), app = express();
 
-db.init(), app.use(express.json());
-
+app.use(express.json()), db.init();
 app.post('/signup', router.signUp);
 
 app.post('/api/authenticate', router.signUp);

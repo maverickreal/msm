@@ -5,13 +5,8 @@ const db = new (require('pg').Client)({
   password: process.env.DBPASSWORD
 });
 
-const init = async () => {
-  try {
-    await db.connect();
-  }
-  catch (error) {
-    console.error(error);
-  }
+const init = () => {
+  db.connect();
 }
 
 const verifyCredentials = async (email, password) => {
@@ -40,7 +35,6 @@ const userExists = async (email, password) => {
     }
   }
   catch (error) {
-    console.error(error);
     returnValue.error = error;
   }
   return returnValue;
@@ -54,7 +48,6 @@ const createUser = async (id, name, email, password) => {
   }
   catch (error) {
     returnValue = { error };
-    console.error(error);
   }
   return returnValue;
 }
@@ -72,7 +65,6 @@ const followUser = async (followerId, followeeId) => {
     await db.query(`UPDATE USERS SET FOLLOWS=ARRAY_APPEND(FOLLOWS, '${followeeId}') WHERE ID='${followerId}';`);
   }
   catch (error) {
-    console.error(error);
     return error;
   }
 }
@@ -86,7 +78,6 @@ const unFollowUser = async (followerId, followeeId) => {
     await db.query(`UPDATE USERS SET FOLLOWS=ARRAY_REMOVE(FOLLOWS, '${followeeId}') WHERE ID='${followerId}';`);
   }
   catch (error) {
-    console.error(error);
     return error;
   }
 };
@@ -103,7 +94,6 @@ const getUserProfile = async (userId) => {
     }
   }
   catch (error) {
-    console.error(error);
     returnValue = { error };
   }
   return returnValue;
@@ -117,7 +107,6 @@ const createPost = async (postId, userId, title, desc) => {
     await db.query(`UPDATE USERS SET POSTS=ARRAY_APPEND(POSTS, '${postId}') WHERE ID='${userId}';`);
   }
   catch (error) {
-    console.error(error);
     returnValue = { error };
   }
   return returnValue;
@@ -134,7 +123,6 @@ const deletePost = async (userId, postId) => {
     await db.query(`DELETE FROM COMMENTS WHERE POSTID='${postId}';`);
   }
   catch (error) {
-    console.error(error);
     return error;
   }
 }
@@ -152,7 +140,6 @@ const likePost = async (userId, postId) => {
     await db.query(`UPDATE POSTS SET LIKES=ARRAY_APPEND(LIKES, '${userId}') WHERE ID='${postId}';`);
   }
   catch (error) {
-    console.error(error);
     return error;
   }
 }
@@ -166,7 +153,6 @@ const unLikePost = async (userId, postId) => {
     await db.query(`UPDATE POSTS SET LIKES=ARRAY_REMOVE(LIKES, '${userId}') WHERE ID='${postId}';`);
   }
   catch (error) {
-    console.error(error);
     return error;
   }
 }
@@ -185,7 +171,6 @@ const createComment = async (commentId, userId, postId, comment) => {
     }
   }
   catch (error) {
-    console.error(error);
     returnValue = { error };
   }
   return returnValue;
@@ -203,7 +188,6 @@ const getPost = async postId => {
     }
   }
   catch (error) {
-    console.error(error);
     returnValue = { error };
   }
   return returnValue;
