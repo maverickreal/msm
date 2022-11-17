@@ -116,11 +116,11 @@ const createPost = async (postId, userId, title, desc) => {
 
 const deletePost = async (userId, postId) => {
   try {
-    const res = await db.query(`SELECT 1 FROM USERS WHERE '{${postId}}' = ANY( POSTS ) LIMIT 1;`);
+    const res = await db.query(`SELECT 1 FROM USERS WHERE ID='${userId}' AND '{${postId}}' = ANY( POSTS ) LIMIT 1;`);
     if (!res.rows || res.rows.length == 0) {
       return 'post could not be found';
     }
-    await db.query(`DELETE FROM POSTS WHERE ID='${postId}' AND USERID='${userId}';`);
+    await db.query(`DELETE FROM POSTS WHERE ID='${postId}';`);
     await db.query(`UPDATE USERS SET POSTS=ARRAY_REMOVE(POSTS, '${postId}');`);
     await db.query(`DELETE FROM COMMENTS WHERE POSTID='${postId}';`);
   }
@@ -135,7 +135,7 @@ const likePost = async (userId, postId) => {
     if (res.rows.length == 0) {
       return 'post could not be found';
     }
-    res = await db.query(`SELECT 1 FROM POSTS WHERE ID='${postId}' AND '{${userId}}' IN ( LIKES ) LIMIT 1;`);
+    res = await db.query(`SELECT 1 FROM POSTS WHERE ID='${postId}' AND '{${userId}}' = ANY( LIKES ) LIMIT 1;`);
     if (res.rows.length > 0) {
       return 'user has already liked the post';
     }
@@ -148,7 +148,7 @@ const likePost = async (userId, postId) => {
 
 const unLikePost = async (userId, postId) => {
   try {
-    const res = await db.query(`SELECT 1 FROM POSTS WHERE ID='${postId}' AND '{${userId}}' IN ( LIKES ) LIMIT 1;`);
+    const res = await db.query(`SELECT 1 FROM POSTS WHERE ID='${postId}' AND '{${userId}}' = ANY( LIKES ) LIMIT 1;`);
     if (res.rows.length == 0) {
       return 'like could not be found';
     }
