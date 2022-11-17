@@ -15,7 +15,7 @@ const signUp = async (req, res) => {
         }
         const { error, user } = await db.createUser(uuid(), firstName + ' ' + lastName, email, password);
         if (error) {
-            console.error(error);
+            console.log(error);
             return res.status(500).send({ status: 'error', message: error });
         }
         const jwtToken = sign(user, process.env.JWTSECRETKEY);
@@ -23,7 +23,7 @@ const signUp = async (req, res) => {
         res.status(200).send({ status: 'ok', message: user });
     }
     catch (error) {
-        console.error(error);
+        console.log(error);
         res.status(500).send({ status: 'error', message: error });
     }
 };
@@ -36,7 +36,7 @@ const signIn = async (req, res) => {
         }
         const { error, user } = await db.userExists(email, password);
         if (error) {
-            console.error(error);
+            console.log(error);
             return res.status(500).send({ status: 'error', message: error });
         }
         const jwtToken = sign(user, process.env.JWTSECRETKEY);
@@ -44,7 +44,7 @@ const signIn = async (req, res) => {
         res.status(200).send({ status: 'ok', message: user });
     }
     catch (error) {
-        console.error(error);
+        console.log(error);
         res.status(500).send({ status: 'error', message: error });
     }
 };
@@ -57,7 +57,7 @@ const followUser = async (req, res) => {
         }
         const error = await db.followUser(followerId, followeeId);
         if (error) {
-            console.error(error);
+            console.log(error);
             res.status(500).send({ status: 'error', message: error });
         }
         else {
@@ -65,7 +65,7 @@ const followUser = async (req, res) => {
         }
     }
     catch (error) {
-        console.error(error);
+        console.log(error);
         res.status(500).send({ status: 'error', message: error });
     }
 };
@@ -74,7 +74,7 @@ const unfollowUser = async (req, res) => {
     try {
         const error = await db.unFollowUser(req.user.id, req.params['followeeId']);
         if (error) {
-            console.error(error);
+            console.log(error);
             res.status(500).send({ status: 'error', message: error });
         }
         else {
@@ -82,7 +82,7 @@ const unfollowUser = async (req, res) => {
         }
     }
     catch (error) {
-        console.error(error);
+        console.log(error);
         res.status(500).send({ status: 'error', message: error });
     }
 };
@@ -93,7 +93,7 @@ const getUser = async (req, res) => {
         res.status(200).send({ status: 'ok', message: profile });
     }
     catch (error) {
-        console.error(error);
+        console.log(error);
         res.status(500).send({ status: 'error', message: error });
     }
 };
@@ -105,7 +105,7 @@ const putPost = async (req, res) => {
         }
         let { post, error } = await db.createPost(uuid(), req.user.id, req.body.title, req.body.description);
         if (error) {
-            console.error(error);
+            console.log(error);
             res.status(500).send({ status: 'error', message: error });
         }
         else {
@@ -113,7 +113,7 @@ const putPost = async (req, res) => {
         }
     }
     catch (error) {
-        console.error(error);
+        console.log(error);
         res.status(500).send({ status: 'error', message: error });
     }
 };
@@ -122,7 +122,7 @@ const deletePost = async (req, res) => {
     try {
         let error = await db.deletePost(req.user.id, req.params['postId']);
         if (error) {
-            console.error(error);
+            console.log(error);
             res.status(500).send({ status: 'error', message: error });
         }
         else {
@@ -130,7 +130,7 @@ const deletePost = async (req, res) => {
         }
     }
     catch (error) {
-        console.error(error);
+        console.log(error);
         res.status(500).send({ status: 'error', message: error });
     }
 };
@@ -139,7 +139,7 @@ const likePost = async (req, res) => {
     try {
         let error = await db.likePost(req.user.id, req.params['postId']);
         if (error) {
-            console.error(error);
+            console.log(error);
             res.status(500).send({ status: 'error', message: error });
         }
         else {
@@ -147,7 +147,7 @@ const likePost = async (req, res) => {
         }
     }
     catch (error) {
-        console.error(error);
+        console.log(error);
         res.status(500).send({ status: 'error', message: error });
     }
 };
@@ -156,7 +156,7 @@ const unlikePost = async (req, res) => {
     try {
         let error = await db.unLikePost(req.user.id, req.params['postId']);
         if (error) {
-            console.error(error);
+            console.log(error);
             res.status(500).send({ status: 'error', message: error });
         }
         else {
@@ -164,7 +164,7 @@ const unlikePost = async (req, res) => {
         }
     }
     catch (error) {
-        console.error(error);
+        console.log(error);
         res.status(500).send({ status: 'error', message: error });
     }
 };
@@ -173,7 +173,7 @@ const putComment = async (req, res) => {
     try {
         let { error, commentId } = await db.createComment(uuid(), req.user.id, req.params['postId'], req.body.comment);
         if (error) {
-            console.error(error);
+            console.log(error);
             res.status(500).send({ status: 'error', message: error });
         }
         else {
@@ -181,7 +181,7 @@ const putComment = async (req, res) => {
         }
     }
     catch (error) {
-        console.error(error);
+        console.log(error);
         res.status(500).send({ status: 'error', message: error });
     }
 };
@@ -190,7 +190,7 @@ const getPost = async (req, res) => {
     try {
         let { error, post } = await db.getPost(req.params['postId']);
         if (error) {
-            console.error(error);
+            console.log(error);
             res.status(500).send({ status: 'error', message: error });
         }
         else {
@@ -198,7 +198,7 @@ const getPost = async (req, res) => {
         }
     }
     catch (error) {
-        console.error(error);
+        console.log(error);
         res.status(500).send({ status: 'error', message: error });
     }
 };
@@ -207,7 +207,7 @@ const getUserPosts = async (req, res) => {
     try {
         let { error, posts } = await db.getPostsOfUser(req.user.id);
         if (error) {
-            console.error(error);
+            console.log(error);
             res.status(500).send({ status: 'error', message: error });
         }
         else {
@@ -215,7 +215,7 @@ const getUserPosts = async (req, res) => {
         }
     }
     catch (error) {
-        console.error(error);
+        console.log(error);
         res.status(500).send({ status: 'error', message: error });
     }
 };

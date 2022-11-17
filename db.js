@@ -20,7 +20,7 @@ const verifyCredentials = async (email, password) => {
     }
   }
   catch (error) {
-    console.error(error);
+    console.log(error);
   }
   return returnValue;
 }
