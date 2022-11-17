@@ -6,6 +6,10 @@ const signUp = async (req, res) => {
         if (!(firstName && lastName && email && password)) {
             return res.status(400).send({ status: 'error', message: 'signup information not provided' });
         }
+        const emailPattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!emailPattern.test(email)) {
+            return res.status(400).send({ status: 'error', message: 'invalid email address provided' });
+        }
         if ((await db.verifyCredentials(email, password)) === true) {
             return res.status(400).send({ status: 'error', message: 'credentials already in use' });
         }

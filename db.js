@@ -218,5 +218,5 @@ const getPostsOfUser = async userId => {
 }
 
 module.exports = {
-  init, userExists, createUser, followUser, unFollowUser, getUserProfile, createPost, deletePost, likePost, unLikePost, createComment, getPost, getPostsOfUser, verifyCredentials
+  init, userExists, createUser, followUser, unFollowUser, getUserProfile, createPost, deletePost, likePost, unLikePost, createComment, getPost, getPostsOfUser, verifyCredentials, db
 }
