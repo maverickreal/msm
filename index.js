@@ -1,8 +1,10 @@
-const app = require('express')(), db = require('./db.js'), auth = require('./auth.js'), router = require('./routes.js');
+const express = require('express'), db = require('./db.js'), { auth } = require('./auth.js'), router = require('./routes.js'), app = express();
 
-db.init();
+db.init(), app.use(express.json());
 
 app.post('/signup', router.signUp);
+
+app.post('/api/authenticate', router.signUp);
 
 app.post('/signin', router.signIn);
 
@@ -22,7 +24,7 @@ app.post('/api/unlike/:postId', auth, router.unlikePost);
 
 app.post('/api/comment/:postId', auth, router.putComment);
 
-app.get('/api/post/:postId', auth, router.getPost);
+app.get('/api/posts/:postId', auth, router.getPost);
 
 app.get('/api/all_posts', auth, router.getUserPosts);
 

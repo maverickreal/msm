@@ -1,13 +1,14 @@
-const jwt = require('jsonwebtoken');
+const { verify } = require('jsonwebtoken');
 
-const auth = (req, res) => {
-    const jwtToken = req.body.token || req.query.token || req.headers['x-access-token'];
-
-    if (!jwtToken) {
-        res.send({ status: 'error', message: 'authentication failed' });
+const auth = (req, res, next) => {
+    try {
+        const jwtToken = req.body.token || req.query.token || req.headers['x-access-token'];
+        req.user = verify(jwtToken, process.env.JWTSECRETKEY);
+        next();
     }
-    else {
-        req.user = jwt.verify(jwtToken, process.env.JWTSECRETKEY);
+    catch (error) {
+        console.error(error);
+        res.send({ status: 'error', message: 'authentication failed' });
     }
 };
 
