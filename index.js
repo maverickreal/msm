@@ -28,4 +28,9 @@ app.get('/api/posts/:postId', auth, router.getPost);
 
 app.get('/api/all_posts', auth, router.getUserPosts);
 
-app.listen(process.env.PORT || 8080);
+if (process.env.ENV == 'test') {
+    module.exports = app;
+}
+else {
+    app.listen(process.env.PORT || 8080);
+}

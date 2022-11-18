@@ -8,7 +8,12 @@ const db = new (require('pg').Client)({
 });
 
 const init = () => {
-  db.connect();
+  try {
+    db.connect();
+  }
+  catch (error) {
+    console.log(error);
+  }
 }
 
 const verifyCredentials = async (email, password) => {
